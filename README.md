@@ -1,32 +1,45 @@
-# 1페이지 정적 블로그
+# 1페이지 Markdown 정적 블로그
 
-웹 페이지는 `index.html` 하나뿐입니다.
+웹 페이지는 `index.html` 하나뿐이며, 게시글 본문은 Markdown(`.md`) 파일로 관리합니다.
 
-## 파일
-- index.html : 유일한 웹 페이지
-- posts.json : 게시글 목록 + 본문 관리
-- sitemap.xml : 검색엔진 제출용
-- robots.txt : 검색로봇 설정
+## 폴더 구조
 
-## 새 글 추가
-`posts.json` 배열 안에 아래 형식으로 한 건을 추가합니다.
+```text
+index.html
+posts.json
+sitemap.xml
+robots.txt
+posts/
+  2026-08-10-welcome.md
+```
+
+## 새 글 작성 방법
+
+1. `posts/` 폴더에 `.md` 파일을 만듭니다.
+2. `posts.json`에 글의 메타데이터와 `file` 경로를 추가합니다.
+3. GitHub에 push합니다.
+4. 연결된 Vercel/Netlify가 자동 재배포합니다.
+
+### posts.json 예시
 
 ```json
 {
   "slug": "my-post",
   "title": "새 글 제목",
-  "summary": "목록에서 보여줄 요약",
+  "summary": "목록에 보일 요약",
   "date": "2026-08-10",
   "category": "AI",
   "tags": ["ChatGPT", "자동화"],
   "published": true,
-  "content": "<p>여기에 HTML 본문을 작성합니다.</p>"
+  "file": "posts/my-post.md"
 }
 ```
 
-## 배포
-GitHub 저장소에 이 파일들을 올린 후 Netlify 또는 Vercel과 연결하면 됩니다.
+## 현재 최초 게시글
 
-## 꼭 수정할 것
-배포 주소가 확정되면 `index.html`, `sitemap.xml`, `robots.txt` 안의
-`https://example.com`을 실제 도메인으로 바꾸세요.
+- `posts/2026-08-10-welcome.md`
+- 제목: `블로그를 시작하며`
+
+## 배포 주소 확정 후
+
+`index.html`, `sitemap.xml`, `robots.txt` 안의 `https://example.com`을 실제 Vercel/Netlify 또는 커스텀 도메인 주소로 변경하세요.
