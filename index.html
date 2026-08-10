@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI · 데이터분석 블로그</title>
+  <meta name="description" content="AI, 데이터분석, 업무자동화 관련 글을 공유하는 정적 블로그입니다." />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://example.com/" />
+  <style>
+    :root{
+      --bg:#f7f8fb; --card:#fff; --text:#172033; --muted:#667085;
+      --line:#e7eaf0; --brand:#2563eb; --brand2:#1d4ed8;
+      --max:1040px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;background:var(--bg);color:var(--text)}
+    a{color:inherit;text-decoration:none}
+    .wrap{max-width:var(--max);margin:auto;padding:0 20px}
+    header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+    .nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .logo{font-weight:800;font-size:20px}
+    .logo span{color:var(--brand)}
+    .hero{padding:68px 0 38px}
+    .hero h1{font-size:44px;line-height:1.15;margin:0 0 14px}
+    .hero p{font-size:18px;color:var(--muted);margin:0;line-height:1.7}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;margin:28px 0}
+    input,select{border:1px solid var(--line);background:#fff;border-radius:12px;padding:13px 14px;font-size:15px}
+    input{flex:1;min-width:240px}
+    select{min-width:160px}
+    .count{color:var(--muted);font-size:14px;margin-bottom:14px}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;padding-bottom:70px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;transition:.2s}
+    .card:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(16,24,40,.08)}
+    .meta{font-size:13px;color:var(--brand);font-weight:700;margin-bottom:10px}
+    .card h2{font-size:22px;margin:0 0 10px;line-height:1.35}
+    .summary{color:var(--muted);line-height:1.7;margin:0}
+    .article{display:none;background:#fff;border:1px solid var(--line);border-radius:20px;padding:34px;margin-bottom:70px}
+    .article.active{display:block}
+    .article h1{font-size:36px;margin:0 0 10px}
+    .article .meta{margin-bottom:26px}
+    .article .body{font-size:17px;line-height:1.9}
+    .back{display:inline-block;margin-bottom:22px;color:var(--brand);font-weight:700;cursor:pointer}
+    footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted);font-size:14px}
+    @media(max-width:720px){
+      .hero h1{font-size:34px}
+      .grid{grid-template-columns:1fr}
+      .article{padding:24px}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="./">AI <span>Data Blog</span></a>
+    <div>정적 블로그</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="home">
+    <div class="hero">
+      <h1>AI · 데이터분석 · 업무자동화</h1>
+      <p>실무에서 바로 활용할 수 있는 AI와 데이터분석 이야기를 공유합니다.</p>
+    </div>
+
+    <div class="tools">
+      <input id="search" type="search" placeholder="글 제목 또는 내용 검색" />
+      <select id="category">
+        <option value="">전체 카테고리</option>
+      </select>
+    </div>
+
+    <div id="count" class="count"></div>
+    <div id="posts" class="grid"></div>
+  </section>
+
+  <article id="article" class="article">
+    <div class="back" onclick="showHome()">← 목록으로</div>
+    <h1 id="articleTitle"></h1>
+    <div id="articleMeta" class="meta"></div>
+    <div id="articleBody" class="body"></div>
+  </article>
+</main>
+
+<footer>
+  <div class="wrap">© 2026 AI Data Blog. All rights reserved.</div>
+</footer>
+
+<script>
+let POSTS = [];
+
+async function loadPosts(){
+  try{
+    const res = await fetch('./posts.json?v=' + Date.now());
+    POSTS = await res.json();
+    init();
+  }catch(e){
+    document.getElementById('posts').innerHTML =
+      '<div class="card">posts.json을 불러오지 못했습니다. 웹서버 또는 배포 환경에서 열어주세요.</div>';
+  }
+}
+
+function init(){
+  const cats = [...new Set(POSTS.map(p=>p.category).filter(Boolean))];
+  const select = document.getElementById('category');
+  cats.forEach(c=>{
+    const o=document.createElement('option'); o.value=c; o.textContent=c; select.appendChild(o);
+  });
+  document.getElementById('search').addEventListener('input', render);
+  select.addEventListener('change', render);
+
+  const slug = new URLSearchParams(location.search).get('post');
+  if(slug) showPost(slug, false); else render();
+}
+
+function render(){
+  document.getElementById('home').style.display='block';
+  document.getElementById('article').classList.remove('active');
+
+  const q=document.getElementById('search').value.trim().toLowerCase();
+  const c=document.getElementById('category').value;
+  const list=POSTS
+    .filter(p=>p.published !== false)
+    .filter(p=>!c || p.category===c)
+    .filter(p=>!q || [p.title,p.summary,p.category,(p.tags||[]).join(' ')].join(' ').toLowerCase().includes(q))
+    .sort((a,b)=>new Date(b.date)-new Date(a.date));
+
+  document.getElementById('count').textContent=`전체 ${POSTS.filter(p=>p.published!==false).length}개 · 현재 ${list.length}개`;
+  document.getElementById('posts').innerHTML=list.map(p=>`
+    <a class="card" href="?post=${encodeURIComponent(p.slug)}" onclick="event.preventDefault();showPost('${p.slug}')">
+      <div class="meta">${p.category || '일반'} · ${p.date}</div>
+      <h2>${escapeHtml(p.title)}</h2>
+      <p class="summary">${escapeHtml(p.summary || '')}</p>
+    </a>
+  `).join('') || '<div class="card">조건에 맞는 글이 없습니다.</div>';
+}
+
+function showPost(slug, push=true){
+  const p=POSTS.find(x=>x.slug===slug && x.published!==false);
+  if(!p){ showHome(); return; }
+
+  document.getElementById('home').style.display='none';
+  document.getElementById('article').classList.add('active');
+  document.getElementById('articleTitle').textContent=p.title;
+  document.getElementById('articleMeta').textContent=`${p.category || '일반'} · ${p.date}`;
+  document.getElementById('articleBody').innerHTML=p.content || '<p>본문이 없습니다.</p>';
+  document.title=`${p.title} | AI Data Blog`;
+
+  if(push) history.pushState({},'',`?post=${encodeURIComponent(slug)}`);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showHome(){
+  history.pushState({},'',location.pathname);
+  document.title='AI · 데이터분석 블로그';
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+window.addEventListener('popstate', ()=>{
+  const slug=new URLSearchParams(location.search).get('post');
+  if(slug) showPost(slug,false); else render();
+});
+
+function escapeHtml(s=''){
+  return s.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+
+loadPosts();
+</script>
+</body>
+</html>
