@@ -1,30 +1,17 @@
 [
   {
     "slug": "welcome",
-    "title": "블로그를 시작합니다",
-    "summary": "AI, 데이터분석, 업무자동화 실무 이야기를 공유합니다.",
+    "title": "블로그를 시작하며",
+    "summary": "AI, 데이터분석, 업무자동화에 대한 경험과 배움을 기록하고 나누는 공간을 시작합니다.",
     "date": "2026-08-10",
-    "category": "공지",
+    "category": "인사말",
     "tags": [
       "AI",
       "데이터분석",
-      "업무자동화"
+      "업무자동화",
+      "생성형AI"
     ],
     "published": true,
-    "content": "<p>이 블로그는 HTML/CSS/JavaScript만으로 만든 정적 블로그입니다.</p><p>새 글은 <strong>posts.json</strong>에 한 건씩 추가하면 메인 목록과 본문이 자동으로 표시됩니다.</p>"
-  },
-  {
-    "slug": "static-blog-guide",
-    "title": "정적 블로그 운영 방법",
-    "summary": "GitHub에 글을 올리고 Netlify 또는 Vercel에서 자동 배포하는 구조입니다.",
-    "date": "2026-08-10",
-    "category": "업무자동화",
-    "tags": [
-      "GitHub",
-      "Netlify",
-      "Vercel"
-    ],
-    "published": true,
-    "content": "<p>GitHub 저장소를 Netlify 또는 Vercel과 연결하면 <strong>push할 때마다 자동 배포</strong>됩니다.</p><p>페이지 파일은 index.html 하나뿐이며, 글 데이터는 posts.json에서 관리합니다.</p>"
+    "file": "posts/2026-08-10-welcome.md"
   }
 ]
